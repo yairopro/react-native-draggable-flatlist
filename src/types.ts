@@ -33,6 +33,9 @@ export type DraggableFlatListProps<T> = Modify<
     renderItem: RenderItem<T>;
     renderPlaceholder?: RenderPlaceholder<T>;
     simultaneousHandlers?: React.Ref<any> | React.Ref<any>[];
+    cellStyle?:
+      | StyleProp<ViewStyle>
+      | ((item: T, index: number) => StyleProp<ViewStyle>);
   } & Partial<DefaultProps>
 >;
 

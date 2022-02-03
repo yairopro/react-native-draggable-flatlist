@@ -20,6 +20,7 @@ import { typedMemo } from "../utils";
 import { useRefs } from "../context/refContext";
 import { useAnimatedValues } from "../context/animatedValueContext";
 import CellProvider from "../context/cellContext";
+import { DraggableFlatListProps } from "../types";
 
 type Props<T> = {
   item: T;
@@ -27,10 +28,11 @@ type Props<T> = {
   children: React.ReactNode;
   onLayout: (e: LayoutChangeEvent) => void;
   style?: StyleProp<ViewStyle>;
+  parentProps: DraggableFlatListProps<T>;
 };
 
 function CellRendererComponent<T>(props: Props<T>) {
-  const { item, index, onLayout, children } = props;
+  const { item, index, onLayout, children, parentProps } = props;
 
   const currentIndexAnim = useValue(index);
 
@@ -134,6 +136,11 @@ function CellRendererComponent<T>(props: Props<T>) {
     [updateCellMeasurements, onLayout]
   );
 
+  const cellStyle =
+    parentProps.cellStyle instanceof Function
+      ? parentProps.cellStyle(item, index)
+      : parentProps.cellStyle;
+
   // changing zIndex crashes android:
   // https://github.com/facebook/react-native/issues/28751
   return (
@@ -145,6 +152,7 @@ function CellRendererComponent<T>(props: Props<T>) {
         isAndroid && { elevation: isActive ? 1 : 0 },
         { flexDirection: horizontal ? "row" : "column" },
         (isWeb || isIOS) && { zIndex: isActive ? 999 : 0 },
+        cellStyle,
       ]}
       pointerEvents={activeKey ? "none" : "auto"}
     >
